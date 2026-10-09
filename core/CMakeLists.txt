@@ -24,7 +24,8 @@ add_library(zanni-node-core STATIC
     src/zanni_node_core.c
 )
 
-target_link_libraries(zanni-node-core PRIVATE zanni-protocol)
+target_link_libraries(zanni-node-core PUBLIC 
+    zanni-protocol)
 
 # Specify include directories
 target_include_directories(zanni-node-core PUBLIC 

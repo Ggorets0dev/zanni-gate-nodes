@@ -13,7 +13,7 @@
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
 
-#define MAX_EVENTS 64
+#define MAX_EVENTS      10
 
 static void set_nonblocking(int fd) 
 {
