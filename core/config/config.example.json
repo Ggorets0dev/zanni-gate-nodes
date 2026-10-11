@@ -1,0 +1,18 @@
+{
+    "server":
+    {
+        "port" : 9199
+    },
+    "virtual_devices":
+    [
+        {
+            "tag": "DEV1",
+            "type": "toogle",
+            "commands":
+            {
+                "on": "echo \"Hello World!\"",
+                "off": "echo \"Bye World!\""
+            }
+        }
+    ]
+}

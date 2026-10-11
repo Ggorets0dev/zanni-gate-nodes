@@ -10,6 +10,8 @@
 #include <netinet/in.h>
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include "znc.h"
 #include "znc_log.h"
 

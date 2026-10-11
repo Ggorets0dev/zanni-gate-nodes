@@ -3,6 +3,9 @@ project(zanni-node-core VERSION 0.1.0 LANGUAGES C)
 
 option(ZANNI_VERSION_IN_OUTPUT_NAME "Append version to output library filename" OFF)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(JSONC REQUIRED IMPORTED_TARGET json-c)
+
 # Generate version header from template
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/include/znc_version.h.in
@@ -23,6 +26,7 @@ FetchContent_MakeAvailable(zanni-protocol)
 add_library(zanni-node-core STATIC
     src/znc.c
     src/znc_log.c
+    src/znc_config.c
 )
 
 target_link_libraries(zanni-node-core PUBLIC 
@@ -33,6 +37,10 @@ target_include_directories(zanni-node-core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
     $<INSTALL_INTERFACE:include>
+)
+
+target_link_libraries(zanni-node-core PRIVATE
+    PkgConfig::JSONC
 )
 
 # Set library output name if versioned filename option is enabled
