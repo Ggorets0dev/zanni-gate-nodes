@@ -147,4 +147,6 @@ int znc_start_server(int port, int listen_backlog, zanni_recv_callback_t callbac
             }
         }
     }
+
+    return 0;
 }

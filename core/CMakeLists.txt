@@ -27,6 +27,7 @@ add_library(zanni-node-core STATIC
     src/znc.c
     src/znc_log.c
     src/znc_config.c
+    src/znc_execute.c
 )
 
 target_link_libraries(zanni-node-core PUBLIC 

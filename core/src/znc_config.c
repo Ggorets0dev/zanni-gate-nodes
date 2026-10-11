@@ -25,6 +25,28 @@ static int parse_device_type(const char *type_str, zanni_virt_dev_e *out_type)
     return -1;
 }
 
+static int parse_server(struct json_object *server_obj, znc_server_config_t *server)
+{
+    if (!server_obj || !server)
+    {
+        return -1;
+    }
+
+    struct json_object *port_obj = NULL;
+    if (json_object_object_get_ex(server_obj, "port", &port_obj))
+    {
+        server->port = json_object_get_int(port_obj);
+    }
+    else
+    {
+        log_format(LOG_LEVEL_WARN, "Server section is missing 'port' field, using default 9199");
+        server->port = 9199;
+    }
+
+    log_format(LOG_LEVEL_INFO, "Parsed server config: [port=%d]", server->port);
+    return 0;
+}
+
 static int parse_device(struct json_object *dev_obj, znc_virtual_device_t *device)
 {
     struct json_object *tag_obj = NULL;
@@ -132,6 +154,25 @@ int znc_config_load(const char *file_path, znc_config_t *config)
     {
         log_format(LOG_LEVEL_ERROR, "Failed to parse JSON file: '%s'", file_path);
         return -1;
+    }
+
+    /* Parse 'server' section */
+    struct json_object *server_obj = NULL;
+    if (json_object_object_get_ex(root, "server", &server_obj))
+    {
+        if (json_object_is_type(server_obj, json_type_object))
+        {
+            parse_server(server_obj, &config->server);
+        }
+        else
+        {
+            log_format(LOG_LEVEL_WARN, "'server' field must be an object");
+        }
+    }
+    else
+    {
+        log_format(LOG_LEVEL_WARN, "Configuration is missing 'server' section, using default port 9199");
+        config->server.port = 9199;
     }
 
     struct json_object *devices_arr = NULL;
