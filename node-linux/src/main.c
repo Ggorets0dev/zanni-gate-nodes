@@ -1,18 +1,17 @@
 #include <stdio.h>
-#include "zanni_node_core.h" // Assuming this header exists in core/include
+#include "znc.h"
+#include "znc_log.h"
 
 int on_recv(zanni_message_t *message)
 {
     if (!message) return 1;
 
-    printf("TAG: %s\n", message->tag);
-    printf("DEVICE_TYPE: %d\n", message->device_type);
-    printf("STATUS: %d\n", message->status);
+    log_format(LOG_LEVEL_INFO, "Recieved message: [tag=%s, dev_type=%d, status=%d]", message->tag, message->device_type, message->status);
 }
 
 int main() 
 {
-    printf("Starting Zanni Linux Node...\n");
+    log_format(LOG_LEVEL_INFO, "Starting ZanniGate node...");
 
     znc_start_server(9199, 10, on_recv);
     

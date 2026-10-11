@@ -1,4 +1,4 @@
-#include "zanni_node_core.h"
+#include "znc.h"
 
 #include <stdio.h>
 #include <stdlib.h>

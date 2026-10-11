@@ -5,8 +5,8 @@ option(ZANNI_VERSION_IN_OUTPUT_NAME "Append version to output library filename" 
 
 # Generate version header from template
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/zanni_node_core_version.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/include/zanni_node_core_version.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/znc_version.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/include/znc_version.h
     @ONLY
 )
 
@@ -21,7 +21,8 @@ FetchContent_MakeAvailable(zanni-protocol)
 
 # Define the static library
 add_library(zanni-node-core STATIC
-    src/zanni_node_core.c
+    src/znc.c
+    src/znc_log.c
 )
 
 target_link_libraries(zanni-node-core PUBLIC 
