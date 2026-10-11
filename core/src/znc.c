@@ -12,15 +12,34 @@
 #include <sys/eventfd.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <netinet/in.h> 
+#include <netinet/tcp.h>
 #include "znc.h"
 #include "znc_log.h"
 
-#define MAX_EVENTS      10
+#define MAX_EVENTS                  10
+
+#define KEEP_ALIVE_IDLE_SEC         30
+#define KEEP_ALIVE_INTERVAL_SEC     10
+#define KEEP_ALIVE_ATTEMPTS_CNT     3
 
 static void set_nonblocking(int fd) 
 {
     int flags = fcntl(fd, F_GETFL, 0);
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+}
+
+static void set_keepalive(int sock)
+{
+    int keep_alive_enable = 1; 
+    int keep_idle         = KEEP_ALIVE_IDLE_SEC;        // sec
+    int keep_interval     = KEEP_ALIVE_INTERVAL_SEC;    // sec
+    int keep_count        = KEEP_ALIVE_ATTEMPTS_CNT;    // times
+
+    setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &keep_alive_enable, sizeof(keep_alive_enable));
+    setsockopt(sock, IPPROTO_TCP, TCP_KEEPIDLE, &keep_idle, sizeof(keep_idle));
+    setsockopt(sock, IPPROTO_TCP, TCP_KEEPINTVL, &keep_interval, sizeof(keep_interval));
+    setsockopt(sock, IPPROTO_TCP, TCP_KEEPCNT, &keep_count, sizeof(keep_count));
 }
 
 int znc_start_server(int port, int listen_backlog, zanni_recv_callback_t callback)
@@ -90,6 +109,7 @@ int znc_start_server(int port, int listen_backlog, zanni_recv_callback_t callbac
                     }
 
                     set_nonblocking(client_fd);
+                    set_keepalive(client_fd);
                     
                     ev.events = EPOLLIN | EPOLLET;
                     ev.data.fd = client_fd;
