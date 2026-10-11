@@ -1,5 +1,3 @@
-#include "znc.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,6 +10,8 @@
 #include <netinet/in.h>
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
+#include "znc.h"
+#include "znc_log.h"
 
 #define MAX_EVENTS      10
 
@@ -70,6 +70,7 @@ int znc_start_server(int port, int listen_backlog, zanni_recv_callback_t callbac
             {
                 for (;;)
                 {
+                    char ip[INET_ADDRSTRLEN] = {0};
                     struct sockaddr_in client_addr;
                     socklen_t client_len = sizeof(client_addr);
                     int client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &client_len);
@@ -96,6 +97,11 @@ int znc_start_server(int port, int listen_backlog, zanni_recv_callback_t callbac
                         perror("epoll_ctl: client_fd");
                         close(client_fd);
                     }
+
+                    if (inet_ntop(AF_INET, &client_addr.sin_addr, ip, sizeof(ip)) != NULL) 
+                    {
+                        log_format(LOG_LEVEL_INFO, "New client connected: [ip=%s, fd=%d]", ip, client_fd);
+                    }
                 }
             }
             else 
@@ -116,12 +122,14 @@ int znc_start_server(int port, int listen_backlog, zanni_recv_callback_t callbac
                         else 
                         {
                             close(active_fd);
+                            log_format(LOG_LEVEL_INFO, "Client disconnected: [fd=%d]", active_fd);
                             break;
                         }
                     } 
                     else if (bytes_read != sizeof(buf)) 
                     {
                         close(active_fd);
+                        log_format(LOG_LEVEL_INFO, "Client disconnected: [fd=%d]", active_fd);
                         break;
                     }
                     // =======
